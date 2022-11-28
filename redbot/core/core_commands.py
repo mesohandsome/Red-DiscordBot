@@ -4264,6 +4264,13 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         """
         pass
 
+    async def send_msg(self, ctx: commands.Context, *users: Union[discord.Member, int], msg):
+        if len(users) > 1:
+            await ctx.send(_(msg))
+        else:
+            await ctx.send(_(msg))
+        pass
+
     @allowlist.command(name="add", require_var_positional=True)
     async def allowlist_add(self, ctx: commands.Context, *users: Union[discord.Member, int]):
         """
@@ -4277,10 +4284,11 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to add to the allowlist.
         """
         await self.bot.add_to_whitelist(users)
-        if len(users) > 1:
+        await self.send_msg(ctx, users, "Users have been added to the allowlist.")
+        """ if len(users) > 1:
             await ctx.send(_("Users have been added to the allowlist."))
         else:
-            await ctx.send(_("User has been added to the allowlist."))
+            await ctx.send(_("User has been added to the allowlist.")) """
 
     @allowlist.command(name="list")
     async def allowlist_list(self, ctx: commands.Context):
@@ -4323,10 +4331,11 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to remove from the allowlist.
         """
         await self.bot.remove_from_whitelist(users)
-        if len(users) > 1:
+        await self.send_msg(ctx, users, "Users have been removed from the allowlist.")
+        """ if len(users) > 1:
             await ctx.send(_("Users have been removed from the allowlist."))
         else:
-            await ctx.send(_("User has been removed from the allowlist."))
+            await ctx.send(_("User has been removed from the allowlist.")) """
 
     @allowlist.command(name="clear")
     async def allowlist_clear(self, ctx: commands.Context):
