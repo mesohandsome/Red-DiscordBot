@@ -2658,23 +2658,21 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         **Arguments:**
             - `[listening]` - The text to follow `Listening to`. Leave blank to clear the current activity status."""
 
-        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
+        """ status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
         if listening:
             if len(listening) > 128:
-                await ctx.send(
-                    _("The maximum length of listening descriptions is 128 characters.")
-                )
+                await ctx.send(_("The maximum length of listening descriptions is 128 characters."))
                 return
             activity = discord.Activity(name=listening, type=discord.ActivityType.listening)
         else:
             activity = None
         await ctx.bot.change_presence(status=status, activity=activity)
         if activity:
-            await ctx.send(
-                _("Status set to `Listening to {listening}`.").format(listening=listening)
-            )
+            await ctx.send(_("Status set to `Listening to {listening}`.").format(listening=listening))
         else:
-            await ctx.send(_("Listening cleared."))
+            await ctx.send(_("Listening cleared.")) """
+
+        self._set_status_op(ctx, watching = None, listening = listening)
 
     @_set_status.command(name="watching")
     @checks.bot_in_a_guild()
@@ -2693,7 +2691,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         **Arguments:**
             - `[watching]` - The text to follow `Watching`. Leave blank to clear the current activity status."""
 
-        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
+        """ status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
         if watching:
             if len(watching) > 128:
                 await ctx.send(_("The maximum length of watching descriptions is 128 characters."))
@@ -2705,7 +2703,9 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         if activity:
             await ctx.send(_("Status set to `Watching {watching}`.").format(watching=watching))
         else:
-            await ctx.send(_("Watching cleared."))
+            await ctx.send(_("Watching cleared.")) """
+
+        self._set_status_op(ctx, watching = watching, listening = None)
 
     @_set_status.command(name="competing")
     @checks.bot_in_a_guild()
@@ -4419,10 +4419,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to remove from the blocklist.
         """
         await self.bot.remove_from_blacklist(users)
-        if len(users) > 1:
-            await ctx.send(_("Users have been removed from the blocklist."))
-        else:
-            await ctx.send(_("User has been removed from the blocklist."))
+        self.send_msg(ctx, users, "Users have been removed from the blocklist.")
 
     @blocklist.command(name="clear")
     async def blocklist_clear(self, ctx: commands.Context):
@@ -5381,7 +5378,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         rm_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands."
         add_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands, ""please ensure to add yourself to the allowlist first."
         names, uids = self.localallowlist_get_attr(users_or_roles)
-        
+
         if not (ctx.guild.owner == ctx.author or await self.bot.is_owner(ctx.author)):
             current_whitelist = await self.bot.get_whitelist(ctx.guild)
             
@@ -5409,4 +5406,32 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
                 self.localallowlist_msg(ctx, "Users and/or roles have been added to the allowlist.")
             else:
                 self.localallowlist_msg(ctx, "User or role has been added to the allowlist.")
+        
+    async def _set_status_op(self, ctx: commands.Context, *, watching: str = None, listening: str = None):
+        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
+        if watching:
+            operation = watching
+            assert_msg = "The maximum length of watching descriptions is 128 character."
+            activity_msg = "Status set to `Watching {operation}`.".format(operation = operation)
+            None_activity_msg = "Watching cleared."
+        elif listening:
+            operation = listening
+            assert_msg = "The maximum length of listening descriptions is 128 character."
+            activity_msg = "Status set to `Listening {operation}`.".format(operation = operation)
+            None_activity_msg = "Listening cleared."
+
+        if operation:
+            if len(operation) > 128:
+                await ctx.sned(_(assert_msg))
+                return
+            activity = discord.Activity(name = operation, type = discord.ActivityType.operation)
+        else:
+            activity = None
+
+        await ctx.bot.change_presence(status = status, activity = activity)
+
+        if activity:
+            await ctx.semd(_(activity_msg))
+        else:
+            await ctx.send(_(None_activity_msg))
         
