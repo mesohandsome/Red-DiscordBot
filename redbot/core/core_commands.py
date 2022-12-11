@@ -5339,4 +5339,3 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             await ctx.send(_(activity_msg))
         else:
             await ctx.send(_(None_activity_msg))
-        

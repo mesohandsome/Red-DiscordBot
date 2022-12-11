@@ -7,9 +7,14 @@ import keyword
 import logging
 import io
 import random
+import markdown
 import os
 import re
 import sys
+import platform
+import psutil
+import getpass
+import pip
 import traceback
 from pathlib import Path
 from redbot.core import data_manager
@@ -29,7 +34,7 @@ from typing import (
     Set,
     Literal,
 )
-
+import list_operations
 import aiohttp
 import discord
 from babel import Locale as BabelLocale, UnknownLocaleError
@@ -58,6 +63,32 @@ from .utils.chat_formatting import (
     inline,
     pagify,
 )
+from .commands import CommandConverter, CogConverter
+from .commands.requires import PrivilegeLevel
+from .commands.help import HelpMenuSetting
+
+_entities = {
+    "*": "&midast;",
+    "\\": "&bsol;",
+    "`": "&grave;",
+    "!": "&excl;",
+    "{": "&lcub;",
+    "[": "&lsqb;",
+    "_": "&UnderBar;",
+    "(": "&lpar;",
+    "#": "&num;",
+    ".": "&period;",
+    "+": "&plus;",
+    "}": "&rcub;",
+    "]": "&rsqb;",
+    ")": "&rpar;",
+}
+
+_ = i18n.Translator("Core", __file__)
+
+TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
+
+MAX_PREFIX_LENGTH = 25
 
 class list_operations:
     def __init__(self):
