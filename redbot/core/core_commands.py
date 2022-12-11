@@ -34,7 +34,7 @@ from typing import (
     Set,
     Literal,
 )
-
+import list_operations
 import aiohttp
 import discord
 from babel import Locale as BabelLocale, UnknownLocaleError
@@ -121,6 +121,7 @@ MAX_PREFIX_LENGTH = 25
 class CoreLogic:
     def __init__(self, bot: "Red"):
         self.bot = bot
+        self.list_op = list_operations()
         self.bot.register_rpc_handler(self._load)
         self.bot.register_rpc_handler(self._unload)
         self.bot.register_rpc_handler(self._reload)
@@ -4277,11 +4278,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to add to the allowlist.
         """
         await self.bot.add_to_whitelist(users)
-        await self.send_msg(ctx, users, "Users have been added to the allowlist.")
-        """ if len(users) > 1:
-            await ctx.send(_("Users have been added to the allowlist."))
-        else:
-            await ctx.send(_("User has been added to the allowlist.")) """
+        await self.list_op.send_msg(ctx, users, "Users have been added to the allowlist.")
 
     @allowlist.command(name="list")
     async def allowlist_list(self, ctx: commands.Context):
@@ -4324,11 +4321,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to remove from the allowlist.
         """
         await self.bot.remove_from_whitelist(users)
-        await self.send_msg(ctx, users, "Users have been removed from the allowlist.")
-        """ if len(users) > 1:
-            await ctx.send(_("Users have been removed from the allowlist."))
-        else:
-            await ctx.send(_("User has been removed from the allowlist.")) """
+        await self.list_op.send_msg(ctx, users, "Users have been removed from the allowlist.")
 
     @allowlist.command(name="clear")
     async def allowlist_clear(self, ctx: commands.Context):
@@ -4487,25 +4480,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users_or_roles...>` - The users or roles to remove from the local allowlist.
         """
 
-        self.localallowlist_process(1, ctx, users_or_roles)
-
-        """ names, uids = self.localallowlist_get_attr(users_or_roles)
-        if not (ctx.guild.owner == ctx.author or await self.bot.is_owner(ctx.author)):
-            current_whitelist = await self.bot.get_whitelist(ctx.guild)
-            theoretical_whitelist = self.add_get_whitelist(current_whitelist, uids)
-            ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
-            if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                self.localallowlist_msg(ctx, 
-                                        "I cannot allow you to do this, as it would "
-                                        "remove your ability to run commands, "
-                                        "please ensure to add yourself to the allowlist first."
-                                        )
-        await self.bot.remove_from_whitelist(uids, guild=ctx.guild)
-
-        if len(uids) > 1:
-            self.localallowlist_msg(ctx, "Users and/or roles have been added to the allowlist.")
-        else:
-            self.localallowlist_msg(ctx, "User or role has been added to the allowlist.") """
+        self.list_op.localallowlist_process(1, ctx, users_or_roles)
 
         
 
@@ -4527,24 +4502,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users_or_roles...>` - The users or roles to remove from the local allowlist.
         """
 
-        self.localallowlist_process(0, ctx, users_or_roles)
-
-        """ names, uids = self.localallowlist_get_attr(users_or_roles)
-        if not (ctx.guild.owner == ctx.author or await self.bot.is_owner(ctx.author)):
-            current_whitelist = await self.bot.get_whitelist(ctx.guild)
-            theoretical_whitelist = self.remove_get_whitelist(current_whitelist, uids)
-            ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
-            if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                self.localallowlist_msg(ctx, 
-                                        "I cannot allow you to do this, as it would "
-                                        "remove your ability to run commands."
-                                        )
-        await self.bot.remove_from_whitelist(uids, guild=ctx.guild)
-
-        if len(uids) > 1:
-            await ctx.send(_("Users and/or roles have been removed from the server allowlist."))
-        else:
-            await ctx.send(_("User or role has been removed from the server allowlist.")) """
+        self.list_op.localallowlist_process(0, ctx, users_or_roles)
 
     @localallowlist.command(name="clear")
     async def localallowlist_clear(self, ctx: commands.Context):
@@ -5354,59 +5312,6 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
     # My Refactor Code will be placed underneath
     # After the duplicated code be spilt into the functions here
     # Try to make new classes for them
-    async def send_msg(self, ctx: commands.Context, *users: Union[discord.Member, int], msg):
-        if len(users) > 1:
-            await ctx.send(_(msg))
-        else:
-            await ctx.send(_(msg))
-
-    def add_get_whitelist(self, current_whitelist, uids):
-        return current_whitelist.union(uids)
-
-    def remove_get_whitelist(self, current_whilelist, uids):
-        return current_whilelist - uids
-
-    async def localallowlist_msg(self, ctx: commands.Context, msg):
-        return await ctx.send(_(msg))
-        
-    def localallowlist_get_attr(self, *users_or_roles: Union[discord.Member, discord.Role, int]):
-        names = [getattr(u_or_r, "name", u_or_r) for u_or_r in users_or_roles]
-        uids = {getattr(u_or_r, "id", u_or_r) for u_or_r in users_or_roles}
-        return names, uids
-
-    async def localallowlist_process(self, add_or_rm, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
-        rm_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands."
-        add_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands, ""please ensure to add yourself to the allowlist first."
-        names, uids = self.localallowlist_get_attr(users_or_roles)
-
-        if not (ctx.guild.owner == ctx.author or await self.bot.is_owner(ctx.author)):
-            current_whitelist = await self.bot.get_whitelist(ctx.guild)
-            
-            if add_or_rm == 0:
-                theoretical_whitelist = self.remove_get_whitelist(current_whitelist, uids)
-            else:
-                theoretical_whitelist = self.add_get_whitelist(current_whitelist, uids)
-
-            ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
-            if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                if add_or_rm == 0:
-                    self.localallowlist_msg(ctx, rm_msg)
-                else:
-                    self.localallowlist_msg(ctx, add_msg)
-
-        if add_or_rm == 0:
-            await self.bot.remove_from_whitelist(uids, guild=ctx.guild)
-            if len(uids) > 1:
-                await self.localallowlist_msg(ctx, "Users and/or roles have been removed from the server allowlist.")
-            else:
-                await self.localallowlist_msg(ctx, "User or role has been removed from the server allowlist.")
-        else:
-            await self.bot.add_to_whitelist(uids, guild=ctx.guild)
-            if len(uids) > 1:
-                self.localallowlist_msg(ctx, "Users and/or roles have been added to the allowlist.")
-            else:
-                self.localallowlist_msg(ctx, "User or role has been added to the allowlist.")
-        
     async def _set_status_op(self, ctx: commands.Context, *, watching: str = None, listening: str = None):
         status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
         if watching:
@@ -5422,7 +5327,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
 
         if operation:
             if len(operation) > 128:
-                await ctx.sned(_(assert_msg))
+                await ctx.send(_(assert_msg))
                 return
             activity = discord.Activity(name = operation, type = discord.ActivityType.operation)
         else:
@@ -5431,7 +5336,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         await ctx.bot.change_presence(status = status, activity = activity)
 
         if activity:
-            await ctx.semd(_(activity_msg))
+            await ctx.send(_(activity_msg))
         else:
             await ctx.send(_(None_activity_msg))
         
