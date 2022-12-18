@@ -34,7 +34,7 @@ from typing import (
     Set,
     Literal,
 )
-import list_operations
+import send_msg
 import aiohttp
 import discord
 from babel import Locale as BabelLocale, UnknownLocaleError
@@ -124,7 +124,7 @@ import localallowlist_remove
 class CoreLogic:
     def __init__(self, bot: "Red"):
         self.bot = bot
-        self.list_op = list_operations()
+        self.send_msg = send_msg()
         self.bot.register_rpc_handler(self._load)
         self.bot.register_rpc_handler(self._unload)
         self.bot.register_rpc_handler(self._reload)
