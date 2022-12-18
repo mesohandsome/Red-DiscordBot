@@ -104,10 +104,10 @@ class localallowlist_add(IList_operation):
 
             ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
             if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                self.localallowlist_msg(ctx, add_msg)
+                await ctx.send(_(add_msg))
 
         await self.bot.add_to_whitelist(uids, guild=ctx.guild)
         if len(uids) > 1:
-            self.localallowlist_msg(ctx, "Users and/or roles have been added to the allowlist.")
+            await ctx.send(_("Users and/or roles have been added to the allowlist."))
         else:
-            self.localallowlist_msg(ctx, "User or role has been added to the allowlist.")
+            await ctx.send(_("User or role has been added to the allowlist."))

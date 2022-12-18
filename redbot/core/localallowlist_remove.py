@@ -104,10 +104,10 @@ class localallowlist_remove(IList_operation):
 
             ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
             if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                    self.localallowlist_msg(ctx, rm_msg)
+                    await ctx.send(_(rm_msg))
 
         await self.bot.remove_from_whitelist(uids, guild=ctx.guild)
         if len(uids) > 1:
-            await self.localallowlist_msg(ctx, "Users and/or roles have been removed from the server allowlist.")
+            await ctx.send(_("Users and/or roles have been removed from the server allowlist."))
         else:
-            await self.localallowlist_msg(ctx, "User or role has been removed from the server allowlist.")
+            await ctx.send(_("User or role has been removed from the server allowlist."))
