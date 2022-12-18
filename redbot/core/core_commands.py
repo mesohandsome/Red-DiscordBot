@@ -4281,7 +4281,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to add to the allowlist.
         """
         await self.bot.add_to_whitelist(users)
-        await self.list_op.send_msg(ctx, users, "Users have been added to the allowlist.")
+        await self.send_msg.send_msg(ctx, users, "Users have been added to the allowlist.")
 
     @allowlist.command(name="list")
     async def allowlist_list(self, ctx: commands.Context):
@@ -4324,7 +4324,7 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users...>` - The user or users to remove from the allowlist.
         """
         await self.bot.remove_from_whitelist(users)
-        await self.list_op.send_msg(ctx, users, "Users have been removed from the allowlist.")
+        await self.send_msg.send_msg(ctx, users, "Users have been removed from the allowlist.")
 
     @allowlist.command(name="clear")
     async def allowlist_clear(self, ctx: commands.Context):
@@ -4486,7 +4486,6 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         operation = localallowlist_add()
         operation.process(ctx, users_or_roles)
         
-
     @localallowlist.command(name="remove", require_var_positional=True)
     async def localallowlist_remove(
         self, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]
@@ -4507,7 +4506,6 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
 
         operation = localallowlist_remove()
         operation.process(ctx, users_or_roles)
-
 
     @localallowlist.command(name="clear")
     async def localallowlist_clear(self, ctx: commands.Context):
