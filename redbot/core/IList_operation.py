@@ -90,6 +90,9 @@ TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
 
 MAX_PREFIX_LENGTH = 25
 
+from abc import ABCMeta, abstractmethod
+
 class IList_operation:
-    async def process(self, add_or_rm, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
+    @abstractmethod
+    async def process(self, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
         pass

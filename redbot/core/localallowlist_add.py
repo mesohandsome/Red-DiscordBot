@@ -93,7 +93,7 @@ MAX_PREFIX_LENGTH = 25
 import IList_operation
 
 class localallowlist_add(IList_operation):
-    async def process(self, add_or_rm, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
+    async def process(self, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
         add_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands, ""please ensure to add yourself to the allowlist first."
         names = [getattr(u_or_r, "name", u_or_r) for u_or_r in users_or_roles]
         uids = {getattr(u_or_r, "id", u_or_r) for u_or_r in users_or_roles}

@@ -117,6 +117,9 @@ TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
 
 MAX_PREFIX_LENGTH = 25
 
+import localallowlist_add
+import localallowlist_remove
+
 
 class CoreLogic:
     def __init__(self, bot: "Red"):
@@ -4480,8 +4483,8 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users_or_roles...>` - The users or roles to remove from the local allowlist.
         """
 
-        self.list_op.localallowlist_process(1, ctx, users_or_roles)
-
+        operation = localallowlist_add()
+        operation.process(ctx, users_or_roles)
         
 
     @localallowlist.command(name="remove", require_var_positional=True)
@@ -4502,7 +4505,9 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             - `<users_or_roles...>` - The users or roles to remove from the local allowlist.
         """
 
-        self.list_op.localallowlist_process(0, ctx, users_or_roles)
+        operation = localallowlist_remove()
+        operation.process(ctx, users_or_roles)
+
 
     @localallowlist.command(name="clear")
     async def localallowlist_clear(self, ctx: commands.Context):
