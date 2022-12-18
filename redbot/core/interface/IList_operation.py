@@ -40,7 +40,7 @@ import discord
 from babel import Locale as BabelLocale, UnknownLocaleError
 from redbot.core.data_manager import storage_type
 
-from . import (
+from .. import (
     __version__,
     version_info as red_version_info,
     checks,
@@ -50,11 +50,11 @@ from . import (
     bank,
     modlog,
 )
-from ._diagnoser import IssueDiagnoser
-from .utils import AsyncIter, can_user_send_messages_in
-from .utils._internal_utils import fetch_latest_red_version_info
-from .utils.predicates import MessagePredicate
-from .utils.chat_formatting import (
+from .._diagnoser import IssueDiagnoser
+from ..utils import AsyncIter, can_user_send_messages_in
+from ..utils._internal_utils import fetch_latest_red_version_info
+from ..utils.predicates import MessagePredicate
+from ..utils.chat_formatting import (
     box,
     escape,
     humanize_list,
@@ -63,9 +63,9 @@ from .utils.chat_formatting import (
     inline,
     pagify,
 )
-from .commands import CommandConverter, CogConverter
-from .commands.requires import PrivilegeLevel
-from .commands.help import HelpMenuSetting
+from ..commands import CommandConverter, CogConverter
+from ..commands.requires import PrivilegeLevel
+from ..commands.help import HelpMenuSetting
 
 _entities = {
     "*": "&midast;",
@@ -90,24 +90,9 @@ TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
 
 MAX_PREFIX_LENGTH = 25
 
-import IList_operation
+from abc import ABCMeta, abstractmethod
 
-class localallowlist_remove(IList_operation):
+class IList_operation:
+    @abstractmethod
     async def process(self, ctx: commands.Context, *users_or_roles: Union[discord.Member, discord.Role, int]):
-        rm_msg = "I cannot allow you to do this, as it would ""remove your ability to run commands."
-        names = [getattr(u_or_r, "name", u_or_r) for u_or_r in users_or_roles]
-        uids = {getattr(u_or_r, "id", u_or_r) for u_or_r in users_or_roles}
-
-        if not (ctx.guild.owner == ctx.author or await self.bot.is_owner(ctx.author)):
-            current_whitelist = await self.bot.get_whitelist(ctx.guild)  
-            theoretical_whitelist = current_whitelist - uids
-
-            ids = {i for i in (ctx.author.id, *(getattr(ctx.author, "_roles", [])))}
-            if theoretical_whitelist and ids.isdisjoint(theoretical_whitelist):
-                    await ctx.send(_(rm_msg))
-
-        await self.bot.remove_from_whitelist(uids, guild=ctx.guild)
-        if len(uids) > 1:
-            await ctx.send(_("Users and/or roles have been removed from the server allowlist."))
-        else:
-            await ctx.send(_("User or role has been removed from the server allowlist."))
+        pass

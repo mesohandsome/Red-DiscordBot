@@ -14,7 +14,7 @@ from typing import (
 )
 
 import discord
-from . import (
+from .. import (
     __version__,
     version_info as red_version_info,
     checks,

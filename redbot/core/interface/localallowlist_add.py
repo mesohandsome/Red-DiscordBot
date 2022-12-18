@@ -40,7 +40,7 @@ import discord
 from babel import Locale as BabelLocale, UnknownLocaleError
 from redbot.core.data_manager import storage_type
 
-from . import (
+from .. import (
     __version__,
     version_info as red_version_info,
     checks,
@@ -50,11 +50,11 @@ from . import (
     bank,
     modlog,
 )
-from ._diagnoser import IssueDiagnoser
-from .utils import AsyncIter, can_user_send_messages_in
-from .utils._internal_utils import fetch_latest_red_version_info
-from .utils.predicates import MessagePredicate
-from .utils.chat_formatting import (
+from .._diagnoser import IssueDiagnoser
+from ..utils import AsyncIter, can_user_send_messages_in
+from ..utils._internal_utils import fetch_latest_red_version_info
+from ..utils.predicates import MessagePredicate
+from ..utils.chat_formatting import (
     box,
     escape,
     humanize_list,
@@ -63,9 +63,9 @@ from .utils.chat_formatting import (
     inline,
     pagify,
 )
-from .commands import CommandConverter, CogConverter
-from .commands.requires import PrivilegeLevel
-from .commands.help import HelpMenuSetting
+from ..commands import CommandConverter, CogConverter
+from ..commands.requires import PrivilegeLevel
+from ..commands.help import HelpMenuSetting
 
 _entities = {
     "*": "&midast;",
