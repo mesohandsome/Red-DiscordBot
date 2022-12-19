@@ -1,4 +1,69 @@
+import io
+import discord
+import markdown
+import random
+import asyncio
+import itertools
+from string import ascii_letters, digits
+from ..commands import CommandConverter, CogConverter
+from redbot.core.commands import GuildConverter, RawUserIdConverter
+from ..utils.predicates import MessagePredicate
 
+from typing import (
+    TYPE_CHECKING,
+    Union,
+    Tuple,
+    List,
+    Optional,
+    Iterable,
+    Sequence,
+    Dict,
+    Set,
+    Literal,
+)
+
+from .. import (
+    __version__,
+    version_info as red_version_info,
+    checks,
+    commands,
+    errors,
+    i18n,
+    bank,
+    modlog,
+)
+
+_entities = {
+    "*": "&midast;",
+    "\\": "&bsol;",
+    "`": "&grave;",
+    "!": "&excl;",
+    "{": "&lcub;",
+    "[": "&lsqb;",
+    "_": "&UnderBar;",
+    "(": "&lpar;",
+    "#": "&num;",
+    ".": "&period;",
+    "+": "&plus;",
+    "}": "&rcub;",
+    "]": "&rsqb;",
+    ")": "&rpar;",
+}
+
+from ..utils.chat_formatting import (
+    box,
+    escape,
+    humanize_list,
+    humanize_number,
+    humanize_timedelta,
+    inline,
+    pagify,
+)
+
+_ = i18n.Translator("Core", __file__)
+
+def entity_transformer(statement: str) -> str:
+    return "".join(_entities.get(c, c) for c in statement)
 
 class modlogset:
     async def __init__(self, ctx: commands.Context):
