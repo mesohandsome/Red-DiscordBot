@@ -115,7 +115,34 @@ class embedset:
         await ctx.send(box(text))
     
     async def guild(self, ctx: commands.Context, enabled: bool) -> None:
-        pass
+        """
+        Set the server's embed setting.
+
+        If set, this is used instead of the global default to determine whether or not to use embeds.
+        This is used for all commands done in a server.
+
+        If enabled is left blank, the setting will be unset and the global default will be used instead.
+
+        To see full evaluation order of embed settings, run `[p]help embedset`.
+
+        **Examples:**
+            - `[p]embedset server False` - Disables embeds on this server.
+            - `[p]embedset server` - Resets value to use global default.
+
+        **Arguments:**
+            - `[enabled]` - Whether to use embeds on this server. Leave blank to reset to default.
+        """
+        if enabled is None:
+            await self.bot._config.guild(ctx.guild).embeds.clear()
+            await ctx.send(_("Embeds will now fall back to the global setting."))
+            return
+
+        await self.bot._config.guild(ctx.guild).embeds.set(enabled)
+        await ctx.send(
+            _("Embeds are now enabled for this guild.")
+            if enabled
+            else _("Embeds are now disabled for this guild.")
+        )
     
     async def command_guild(self, ctx: commands.GuildContext, command: CommandConverter, enabled: bool = None):
         """
