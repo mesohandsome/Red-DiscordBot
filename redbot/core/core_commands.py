@@ -400,6 +400,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         """Nothing to delete (Core Config is handled in a bot method)"""
         return
 
+
+    """
+    [Wants to Refactor]
+    
+    Basic commands
+    
+    A part that can be extracted into interface
+    """
     @commands.command(hidden=True)
     async def ping(self, ctx: commands.Context):
         """Pong."""
@@ -556,6 +564,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             )
         )
 
+
+    """
+    [Wants to Refactor]
+    
+    The mydata group
+
+    This part can be extracted into its own class 
+    """
     @commands.group(cls=commands.commands._AlwaysAvailableGroup)
     async def mydata(self, ctx: commands.Context):
         """
@@ -1105,6 +1121,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
                 )
             )
 
+
+    """
+    [Wants to Refactor]
+    
+    The embedset group
+    
+    This part can be extracted into its own class
+    """
     @commands.group()
     async def embedset(self, ctx: commands.Context):
         """
@@ -1978,6 +2002,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
                 await ctx.send(_("Restarting..."))
         await ctx.bot.shutdown(restart=True)
 
+
+    """
+    [Wants to Refactor]
+    
+    The bankset group
+    
+    This part can be extracted into its own class
+    """
     @bank.is_owner_if_bank_global()
     @checks.guildowner_or_permissions(administrator=True)
     @commands.group()
@@ -2246,6 +2278,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
             await bank.bank_prune(self.bot, guild=ctx.guild, user_id=uid)
             await ctx.send(_("The bank account for {name} has been pruned.").format(name=name))
 
+
+    """
+    [Wants to Refactor]
+    
+    The modlogset group
+    
+    This part can be extracted into its own class
+    """
     @commands.group()
     @checks.guildowner_or_permissions(administrator=True)
     async def modlogset(self, ctx: commands.Context):
@@ -2348,6 +2388,15 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
 
     # -- Bot Metadata Commands -- ###
 
+    """
+    [Wants to Refactor]
+    
+    The _set group
+    
+    This group is composed by many subgroups
+    
+    So it can be extracted into interface
+    """
     @_set.group(name="bot", aliases=["metadata"])
     @checks.admin_or_permissions(manage_nicknames=True)
     async def _set_bot(self, ctx: commands.Context):
@@ -3651,6 +3700,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         else:
             await ctx.send(_("I will not use buttons on basic menus."))
 
+
+    """
+    [Wants to Refactor]
+    
+    The helpset group
+    
+    This part can be extracted into its own class
+    """
     @commands.group()
     @checks.is_owner()
     async def helpset(self, ctx: commands.Context):
@@ -4631,6 +4688,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         """Commands to enable and disable commands and cogs."""
         pass
 
+
+    """
+    [Wants to Refactor]
+    
+    The command and list part
+    
+    This part can be extracted into interface
+    """
     @checks.is_owner()
     @command_manager.command(name="defaultdisablecog")
     async def command_default_disable_cog(self, ctx: commands.Context, *, cog: CogConverter):
@@ -4999,6 +5064,8 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         await ctx.bot._config.disabled_command_msg.set(message)
         await ctx.tick()
 
+
+
     @commands.guild_only()
     @checks.guildowner_or_permissions(manage_guild=True)
     @commands.group(name="autoimmune")
@@ -5120,6 +5187,14 @@ class Core(commands.commands._RuleDropper, commands.Cog, CoreLogic):
         await self.rpc_unload(request)
         await self.rpc_load(request)
 
+
+    """
+    [Wants to Refactor]
+    
+    The two ignore part
+    
+    Refactor them into interface
+    """
     @commands.group()
     @commands.guild_only()
     @commands.admin_or_can_manage_channel()
