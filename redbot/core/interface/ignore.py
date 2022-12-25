@@ -63,9 +63,9 @@ _ = i18n.Translator("Core", __file__)
 def entity_transformer(statement: str) -> str:
     return "".join(_entities.get(c, c) for c in statement)
 
-import ToIgnore
+import Iignore
 
-class ignore(ToIgnore):
+class ignore(Iignore):
     def __init__(self):
         pass
     

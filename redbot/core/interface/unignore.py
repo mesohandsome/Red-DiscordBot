@@ -63,9 +63,9 @@ _ = i18n.Translator("Core", __file__)
 def entity_transformer(statement: str) -> str:
     return "".join(_entities.get(c, c) for c in statement)
 
-import ToIgnore
+import Iignore
 
-class unignore(ToIgnore):
+class unignore(Iignore):
     async def __init__(self):
         pass
     
@@ -113,6 +113,3 @@ class unignore(ToIgnore):
             await ctx.send(_("This server has been removed from the ignore list."))
         else:
             await ctx.send(_("This server is not in the ignore list."))
-            
-    async def count_ignored(self, ctx: commands.Context):
-        pass
