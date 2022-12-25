@@ -63,7 +63,9 @@ _ = i18n.Translator("Core", __file__)
 def entity_transformer(statement: str) -> str:
     return "".join(_entities.get(c, c) for c in statement)
 
-class helpset:
+import ISet
+
+class helpset(ISet):
     def __init__(self, ctx: commands.Context):
         pass
     
