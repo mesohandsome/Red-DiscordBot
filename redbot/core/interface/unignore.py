@@ -69,9 +69,6 @@ class unignore(ToIgnore):
     async def __init__(self):
         pass
     
-    async def list(self, ctx: commands.Context):
-        pass
-    
     async def channel(
         self,
         ctx: commands.Context,
