@@ -5,7 +5,7 @@ import random
 import asyncio
 import itertools
 from string import ascii_letters, digits
-from ..commands import CommandConverter, CogConverter
+from ...commands import CommandConverter, CogConverter
 
 from typing import (
     TYPE_CHECKING,
@@ -48,7 +48,7 @@ _entities = {
     ")": "&rpar;",
 }
 
-from ..utils.chat_formatting import (
+from ...utils.chat_formatting import (
     box,
     escape,
     humanize_list,

@@ -41,7 +41,7 @@ _entities = {
     ")": "&rpar;",
 }
 
-from ..utils.chat_formatting import (
+from ...utils.chat_formatting import (
     box,
     escape,
     humanize_list,

@@ -13,7 +13,7 @@ from typing import (
 )
 
 import discord
-from .. import (
+from ... import (
     __version__,
     version_info as red_version_info,
     checks,
@@ -41,7 +41,7 @@ _entities = {
     ")": "&rpar;",
 }
 
-from ..utils.chat_formatting import (
+from ...utils.chat_formatting import (
     box,
     escape,
     humanize_list,
