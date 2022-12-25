@@ -290,7 +290,7 @@ class embedset(ISet):
             else _("Embeds are now disabled for you in DMs.")
         )
     
-    def _check_if_command_requires_embed_links(self, command_obj: commands.Command) -> None:
+    def check_command_links(self, command_obj: commands.Command) -> None:
         for command in itertools.chain((command_obj,), command_obj.parents):
             if command.requires.bot_perms.embed_links:
                 # a slight abuse of this exception to save myself two lines later...
