@@ -29,11 +29,9 @@ class Iignore:
     async def __init__(self):
         pass
     
-    @abstractmethod
     async def list(self, ctx: commands.Context):
         pass
     
-    @abstractmethod
     async def channel(
         self,
         ctx: commands.Context,
@@ -47,10 +45,8 @@ class Iignore:
     ):
         pass
     
-    @abstractmethod
     async def guild(self, ctx: commands.Context):
         pass
     
-    @abstractmethod
     async def count_ignored(self, ctx: commands.Context):
         pass
