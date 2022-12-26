@@ -1,0 +1,165 @@
+import io
+import discord
+import markdown
+import random
+import asyncio
+from string import ascii_letters, digits
+from redbot.core.utils.views import SetApiView
+from babel import Locale as BabelLocale, UnknownLocaleError
+
+from typing import (
+    TYPE_CHECKING,
+    Union,
+    Tuple,
+    List,
+    Optional,
+    Iterable,
+    Sequence,
+    Dict,
+    Set,
+    Literal,
+)
+
+from .. import (
+    __version__,
+    version_info as red_version_info,
+    checks,
+    commands,
+    errors,
+    i18n,
+    bank,
+    modlog,
+)
+
+_entities = {
+    "*": "&midast;",
+    "\\": "&bsol;",
+    "`": "&grave;",
+    "!": "&excl;",
+    "{": "&lcub;",
+    "[": "&lsqb;",
+    "_": "&UnderBar;",
+    "(": "&lpar;",
+    "#": "&num;",
+    ".": "&period;",
+    "+": "&plus;",
+    "}": "&rcub;",
+    "]": "&rsqb;",
+    ")": "&rpar;",
+}
+
+from ..utils.chat_formatting import (
+    box,
+    escape,
+    humanize_list,
+    humanize_number,
+    humanize_timedelta,
+    inline,
+    pagify,
+)
+
+_ = i18n.Translator("Core", __file__)
+TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
+
+def entity_transformer(statement: str) -> str:
+    return "".join(_entities.get(c, c) for c in statement)
+
+class _set_status:
+    async def __init__(self, ctx: commands.Context):
+        pass
+    
+    async def _stream(self, ctx: commands.Context, streamer = None, *, stream_title = None):
+        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else None
+
+        if stream_title:
+            stream_title = stream_title.strip()
+            if "twitch.tv/" not in streamer:
+                streamer = "https://www.twitch.tv/" + streamer
+            if len(streamer) > 511:
+                await ctx.send(_("The maximum length of the streamer url is 511 characters."))
+                return
+            if len(stream_title) > 128:
+                await ctx.send(_("The maximum length of the stream title is 128 characters."))
+                return
+            activity = discord.Streaming(url=streamer, name=stream_title)
+            await ctx.bot.change_presence(status=status, activity=activity)
+        elif streamer is not None:
+            await ctx.send_help()
+            return
+        else:
+            await ctx.bot.change_presence(activity=None, status=status)
+        await ctx.send(_("Done."))
+        
+    async def _game(self, ctx: commands.Context, *, game: str = None):
+        if game:
+            if len(game) > 128:
+                await ctx.send(_("The maximum length of game descriptions is 128 characters."))
+                return
+            game = discord.Game(name=game)
+        else:
+            game = None
+        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
+        await ctx.bot.change_presence(status=status, activity=game)
+        if game:
+            await ctx.send(_("Status set to `Playing {game.name}`.").format(game=game))
+        else:
+            await ctx.send(_("Game cleared."))
+            
+    async def _listening(self, ctx: commands.Context, *, listening: str = None):
+        self._set_status_op(ctx, watching = None, listening = listening, competing = None)
+        
+    async def _watching(self, ctx: commands.Context, *, watching: str = None):
+        self._set_status_op(ctx, watching = watching, listening = None, competing = None)
+        
+    async def _set_status_competing(self, ctx: commands.Context, *, competing: str = None):
+        self._set_status_op(ctx, watching = None, listening = None, competing = competing)
+        
+    async def _set_status_op(self, ctx: commands.Context, *, watching: str = None, listening: str = None, competing: str = None):
+        status = ctx.bot.guilds[0].me.status if len(ctx.bot.guilds) > 0 else discord.Status.online
+        if watching:
+            operation = watching
+            assert_msg = "The maximum length of watching descriptions is 128 character."
+            activity_msg = "Status set to `Watching {operation}`.".format(operation = operation)
+            None_activity_msg = "Watching cleared."
+        elif listening:
+            operation = listening
+            assert_msg = "The maximum length of listening descriptions is 128 character."
+            activity_msg = "Status set to `Listening {operation}`.".format(operation = operation)
+            None_activity_msg = "Listening cleared."
+        elif competing:
+            operation = competing
+            assert_msg = "The maximum length of competing descriptions is 128 characters."
+            activity_msg = "Status set to `Competing in {competing}`.".format(competing=competing)
+            None_activity_msg = "Competing cleared."
+
+        if operation:
+            if len(operation) > 128:
+                await ctx.send(_(assert_msg))
+                return
+            activity = discord.Activity(name = operation, type = discord.ActivityType.operation)
+        else:
+            activity = None
+
+        await ctx.bot.change_presence(status = status, activity = activity)
+
+        if activity:
+            await ctx.send(_(activity_msg))
+        else:
+            await ctx.send(_(None_activity_msg))
+            
+    async def my_status(self, ctx: commands.Context, status: discord.Status):
+        game = ctx.bot.guilds[0].me.activity if len(ctx.bot.guilds) > 0 else None
+        await ctx.bot.change_presence(status=status, activity=game)
+        return await ctx.send(_("Status changed to {}.").format(status))
+
+    async def _online(self, ctx: commands.Context):
+        await self._set_my_status(ctx, discord.Status.online)
+        
+    async def _dnd(self, ctx: commands.Context):
+        await self._set_my_status(ctx, discord.Status.do_not_disturb)
+        
+    async def _idle(self, ctx: commands.Context):
+        await self._set_my_status(ctx, discord.Status.idle)
+        
+    async def _invisible(self, ctx: commands.Context):
+        await self._set_my_status(ctx, discord.Status.invisible)
