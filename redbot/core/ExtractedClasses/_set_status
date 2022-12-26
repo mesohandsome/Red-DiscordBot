@@ -111,7 +111,7 @@ class _set_status:
     async def _watching(self, ctx: commands.Context, *, watching: str = None):
         self._set_status_op(ctx, watching = watching, listening = None, competing = None)
         
-    async def _set_status_competing(self, ctx: commands.Context, *, competing: str = None):
+    async def _competing(self, ctx: commands.Context, *, competing: str = None):
         self._set_status_op(ctx, watching = None, listening = None, competing = competing)
         
     async def _set_status_op(self, ctx: commands.Context, *, watching: str = None, listening: str = None, competing: str = None):

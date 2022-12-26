@@ -20,7 +20,7 @@ from typing import (
     Literal,
 )
 
-from .. import (
+from ... import (
     __version__,
     version_info as red_version_info,
     checks,
@@ -48,7 +48,7 @@ _entities = {
     ")": "&rpar;",
 }
 
-from ..utils.chat_formatting import (
+from ...utils.chat_formatting import (
     box,
     escape,
     humanize_list,
@@ -64,7 +64,9 @@ TokenConverter = commands.get_dict_converter(delims=[" ", ",", ";"])
 def entity_transformer(statement: str) -> str:
     return "".join(_entities.get(c, c) for c in statement)
 
-class _set_locale:
+import IEnv
+
+class _set_locale(IEnv):
     async def __init__(self, ctx: commands.Context, language_code: str):
         if ctx.guild is None:
             await ctx.send_help()

@@ -68,28 +68,28 @@ class _set_roles:
     async def __init__(self, ctx: commands.Context):
         pass
     
-    async def _addadminrole(self, ctx: commands.Context, *, role: discord.Role):
+    async def _add_admin_role(self, ctx: commands.Context, *, role: discord.Role):
         async with ctx.bot._config.guild(ctx.guild).admin_role() as roles:
             if role.id in roles:
                 return await ctx.send(_("This role is already an admin role."))
             roles.append(role.id)
         await ctx.send(_("That role is now considered an admin role."))
         
-    async def _addmodrole(self, ctx: commands.Context, *, role: discord.Role):
+    async def _add_mod_role(self, ctx: commands.Context, *, role: discord.Role):
         async with ctx.bot._config.guild(ctx.guild).mod_role() as roles:
             if role.id in roles:
                 return await ctx.send(_("This role is already a mod role."))
             roles.append(role.id)
         await ctx.send(_("That role is now considered a mod role."))
         
-    async def _removeadminrole(self, ctx: commands.Context, *, role: discord.Role):
+    async def _remove_admin_role(self, ctx: commands.Context, *, role: discord.Role):
         async with ctx.bot._config.guild(ctx.guild).admin_role() as roles:
             if role.id not in roles:
                 return await ctx.send(_("That role was not an admin role to begin with."))
             roles.remove(role.id)
         await ctx.send(_("That role is no longer considered an admin role."))
         
-    async def _removemodrole(self, ctx: commands.Context, *, role: discord.Role):
+    async def _remove_mod_role(self, ctx: commands.Context, *, role: discord.Role):
         async with ctx.bot._config.guild(ctx.guild).mod_role() as roles:
             if role.id not in roles:
                 return await ctx.send(_("That role was not a mod role to begin with."))
